@@ -2,11 +2,28 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, Button, Alert, FlatList } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 
+interface Mark {
+  courseName: string;
+  mark: number;
+}
+
+interface Student {
+  _id: string;
+  studentId: string;
+  name: string;
+  semester: string;
+}
+
+interface Course {
+  _id: string;
+  name: string;
+  semester: string;
+}
 
 export default function ResultScreen() {
   const [semester, setSemester] = useState<string>('1');
-  const [students, setStudents] = useState([]);
-  const [courses, setCourses] = useState([]);
+  const [students, setStudents] = useState<Student[]>([]);
+  const [courses, setCourses] = useState<Course[]>([]);
   const [selectedStudentId, setSelectedStudentId] = useState<string>('');
   const [marks, setMarks] = useState<{ [courseName: string]: string }>({});
 
@@ -31,7 +48,7 @@ export default function ResultScreen() {
         const response = await fetch(`http://192.168.165.130:5000/api/courses/${semester}`);
         const data = await response.json();
         setCourses(data);
-        setMarks(data.reduce((acc, course) => ({ ...acc, [course.name]: '' }), {})); // Reset marks
+        setMarks(data.reduce((acc: { [key: string]: string }, course: Course) => ({ ...acc, [course.name]: '' }), {})); // Reset marks
       } catch (error) {
         console.error('Failed to fetch courses', error);
       }

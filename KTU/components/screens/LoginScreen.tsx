@@ -32,7 +32,7 @@ export default function LoginScreen({ navigation }: { navigation: any }) {
     if (id === 'Teacher' && password === 'password') {
       navigation.navigate('TeacherHome');
     } else if (studentIds.includes(id) && password === id) {
-      navigation.navigate('StudentHome');
+      navigation.navigate('StudentHome', { studentId: id }); // Pass the student ID
     } else if (id.length === 10) {
       Alert.alert('Login Failed', 'Invalid login credentials');
     } else {

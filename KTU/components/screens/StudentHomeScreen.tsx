@@ -1,28 +1,40 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Picker, Button, Alert } from 'react-native';
+import { View, Text, Button, Alert } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 
 interface Mark {
   courseName: string;
   mark: number;
 }
 
-export default function StudentHomeScreen({ route, navigation }: { route: any, navigation: any }) {
-  const [semester, setSemester] = useState<string>('1');
-  const [marks, setMarks] = useState<Mark[] | null>(null);
-  const { studentId } = route.params;  // Assuming studentId is passed from the login screen
+interface ApiResponse {
+  marks: Mark[];
+}
 
+export default function StudentHomeScreen({ route, navigation }: { route: any; navigation: any }) {
+  const [semester, setSemester] = useState<string>('1'); // Default to semester 1
+  const [marks, setMarks] = useState<Mark[]>([]);
+  const studentId = route.params?.studentId; // Safely access studentId
+
+  // Log received student ID
   useEffect(() => {
-    if (semester) {
-      fetchMarksForSemester();
+    console.log('Received Student ID:', studentId);
+    if (studentId) {
+      fetchMarksForSemester(); // Fetch marks when component mounts and semester changes
+    } else {
+      Alert.alert('Error', 'Student ID is not available');
     }
-  }, [semester]);
+  }, [semester, studentId]);
 
   const fetchMarksForSemester = async () => {
     try {
-      const response = await fetch(`http://192.168.165.130:5000/api/results?studentId=${studentId}&semester=${semester}`);
+      const url = `http://192.168.165.130:5000/api/results?studentId=${studentId}&semester=${semester}`;
+      console.log(`Fetching results from: ${url}`); // Log the URL being fetched
+      const response = await fetch(url);
+
       if (response.ok) {
-        const data = await response.json();
-        setMarks(data?.marks || []);
+        const data: ApiResponse = await response.json();
+        setMarks(data.marks || []); // Set marks based on fetched data
       } else {
         Alert.alert('Error', 'Failed to fetch marks for this semester');
       }
@@ -35,7 +47,7 @@ export default function StudentHomeScreen({ route, navigation }: { route: any, n
   return (
     <View style={{ flex: 1, justifyContent: 'center', padding: 16 }}>
       <Text style={{ fontSize: 18, marginBottom: 10 }}>Select Semester to View Marks</Text>
-      
+
       <Picker
         selectedValue={semester}
         onValueChange={(value) => setSemester(value)}
@@ -47,23 +59,19 @@ export default function StudentHomeScreen({ route, navigation }: { route: any, n
       </Picker>
 
       <View style={{ marginTop: 20 }}>
-        {marks ? (
-          marks.length > 0 ? (
-            marks.map((mark, index) => (
-              <View key={index} style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 8 }}>
-                <Text style={{ fontSize: 16 }}>{mark.courseName}</Text>
-                <Text style={{ fontSize: 16 }}>{mark.mark}</Text>
-              </View>
-            ))
-          ) : (
-            <Text>No marks available for this semester.</Text>
-          )
+        {marks.length > 0 ? (
+          marks.map((mark, index) => (
+            <View key={index} style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 8 }}>
+              <Text style={{ fontSize: 16 }}>{mark.courseName}</Text>
+              <Text style={{ fontSize: 16 }}>{mark.mark}</Text>
+            </View>
+          ))
         ) : (
-          <Text>Select a semester to view marks</Text>
+          <Text>No marks available for this semester.</Text>
         )}
       </View>
 
-      <Button title="Logout" onPress={() => navigation.navigate('Login')} style={{ marginTop: 30 }} />
+      <Button title="Logout" onPress={() => navigation.navigate('Login')} />
     </View>
   );
 }
