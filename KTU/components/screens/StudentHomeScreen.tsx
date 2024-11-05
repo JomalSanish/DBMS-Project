@@ -16,20 +16,17 @@ export default function StudentHomeScreen({ route, navigation }: { route: any; n
   const [marks, setMarks] = useState<Mark[]>([]);
   const studentId = route.params?.studentId; // Safely access studentId
 
-  // Log received student ID
+  // Check if studentId is available
   useEffect(() => {
-    console.log('Received Student ID:', studentId);
-    if (studentId) {
-      fetchMarksForSemester(); // Fetch marks when component mounts and semester changes
-    } else {
+    if (!studentId) {
       Alert.alert('Error', 'Student ID is not available');
     }
-  }, [semester, studentId]);
+    // Removed fetchMarksForSemester call from here to avoid fetching on mount
+  }, [studentId]);
 
   const fetchMarksForSemester = async () => {
     try {
       const url = `http://192.168.165.130:5000/api/results?studentId=${studentId}&semester=${semester}`;
-      console.log(`Fetching results from: ${url}`); // Log the URL being fetched
       const response = await fetch(url);
 
       if (response.ok) {
@@ -43,6 +40,13 @@ export default function StudentHomeScreen({ route, navigation }: { route: any; n
       console.error(error);
     }
   };
+
+  // Fetch marks only when the semester changes
+  useEffect(() => {
+    if (studentId) {
+      fetchMarksForSemester();
+    }
+  }, [semester, studentId]);
 
   return (
     <View style={{ flex: 1, justifyContent: 'center', padding: 16 }}>
