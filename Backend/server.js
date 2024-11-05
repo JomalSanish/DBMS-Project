@@ -13,23 +13,23 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb+srv://22cs029:ktuapp@ktuapp
 
 // Define schemas
 const studentSchema = new mongoose.Schema({
-  studentId: String,
-  name: String,
-  semester: String,
+  studentId: { type: String, required: true },
+  name: { type: String, required: true },
+  semester: { type: String, required: true },
 });
 
 const courseSchema = new mongoose.Schema({
-  name: String,
-  semester: String,
+  name: { type: String, required: true },
+  semester: { type: String, required: true },
 });
 
 const resultSchema = new mongoose.Schema({
-  studentId: String,
-  semester: String,
+  studentId: { type: String, required: true },
+  semester: { type: String, required: true },
   marks: [
     {
-      courseName: String,
-      mark: Number,
+      courseName: { type: String, required: true },
+      mark: { type: Number, required: true },
     }
   ]
 });
@@ -64,7 +64,7 @@ app.get('/api/students', async (req, res) => {
 });
 
 // Endpoint to fetch students by semester
-app.get('/api/students/:semester', async (req, res) => {
+app.get('/api/students/semester/:semester', async (req, res) => {
   const { semester } = req.params;
   try {
     const students = await Student.find({ semester });
@@ -72,6 +72,22 @@ app.get('/api/students/:semester', async (req, res) => {
   } catch (error) {
     console.error("Error fetching students by semester:", error);
     res.status(500).send({ error: 'Failed to fetch students' });
+  }
+});
+
+// Endpoint to fetch a student by ID
+app.get('/api/students/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const student = await Student.findOne({ studentId: id });
+    if (student) {
+      res.status(200).send(student);
+    } else {
+      res.status(404).send({ error: 'Student not found' });
+    }
+  } catch (error) {
+    console.error("Error fetching student by ID:", error);
+    res.status(500).send({ error: 'Failed to fetch student' });
   }
 });
 

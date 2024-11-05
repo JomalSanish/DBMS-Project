@@ -29,14 +29,17 @@ export default function LoginScreen({ navigation }: { navigation: any }) {
   }, []);
 
   const handleLogin = () => {
+    // Check for teacher credentials
     if (id === 'Teacher' && password === 'password') {
       navigation.navigate('TeacherHome');
-    } else if (studentIds.includes(id) && password === id) {
+    } 
+    // Check for student credentials
+    else if (studentIds.includes(id) && password === id) {
       navigation.navigate('StudentHome', { studentId: id }); // Pass the student ID
-    } else if (id.length === 10) {
+    } 
+    // Invalid login
+    else {
       Alert.alert('Login Failed', 'Invalid login credentials');
-    } else {
-      Alert.alert('Error', 'Invalid ID format');
     }
   };
 

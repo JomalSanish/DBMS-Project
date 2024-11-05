@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Button, Alert } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
 
 interface Mark {
   courseName: string;
@@ -11,20 +10,40 @@ interface ApiResponse {
   marks: Mark[];
 }
 
+interface Student {
+  studentId: string;
+  semester: string;
+}
+
 export default function StudentHomeScreen({ route, navigation }: { route: any; navigation: any }) {
-  const [semester, setSemester] = useState<string>('1'); // Default to semester 1
   const [marks, setMarks] = useState<Mark[]>([]);
+  const [semester, setSemester] = useState<string>(''); // No default semester
   const studentId = route.params?.studentId; // Safely access studentId
 
-  // Check if studentId is available
+  // Fetch student semester and marks when the component mounts
   useEffect(() => {
-    if (!studentId) {
-      Alert.alert('Error', 'Student ID is not available');
-    }
-    // Removed fetchMarksForSemester call from here to avoid fetching on mount
+    const fetchStudentData = async () => {
+      try {
+        const studentResponse = await fetch(`http://192.168.165.130:5000/api/students/${studentId}`);
+        if (studentResponse.ok) {
+          const student: Student = await studentResponse.json();
+          setSemester(student.semester); // Set the fetched semester
+
+          // Fetch marks for the fetched semester
+          fetchMarksForSemester(studentId, student.semester);
+        } else {
+          Alert.alert('Error', 'Failed to fetch student data');
+        }
+      } catch (error) {
+        Alert.alert('Error', 'Something went wrong while fetching student data');
+        console.error(error);
+      }
+    };
+
+    fetchStudentData();
   }, [studentId]);
 
-  const fetchMarksForSemester = async () => {
+  const fetchMarksForSemester = async (studentId: string, semester: string) => {
     try {
       const url = `http://192.168.165.130:5000/api/results?studentId=${studentId}&semester=${semester}`;
       const response = await fetch(url);
@@ -41,27 +60,9 @@ export default function StudentHomeScreen({ route, navigation }: { route: any; n
     }
   };
 
-  // Fetch marks only when the semester changes
-  useEffect(() => {
-    if (studentId) {
-      fetchMarksForSemester();
-    }
-  }, [semester, studentId]);
-
   return (
     <View style={{ flex: 1, justifyContent: 'center', padding: 16 }}>
-      <Text style={{ fontSize: 18, marginBottom: 10 }}>Select Semester to View Marks</Text>
-
-      <Picker
-        selectedValue={semester}
-        onValueChange={(value) => setSemester(value)}
-        style={{ marginBottom: 20 }}
-      >
-        {Array.from({ length: 8 }, (_, i) => i + 1).map((sem) => (
-          <Picker.Item label={`Semester ${sem}`} value={String(sem)} key={sem} />
-        ))}
-      </Picker>
-
+      <Text style={{ fontSize: 18, marginBottom: 10 }}>Semester: {semester}</Text>
       <View style={{ marginTop: 20 }}>
         {marks.length > 0 ? (
           marks.map((mark, index) => (

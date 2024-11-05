@@ -31,9 +31,18 @@ export default function ResultScreen() {
   useEffect(() => {
     const fetchStudents = async () => {
       try {
-        const response = await fetch(`http://192.168.165.130:5000/api/students/${semester}`);
+        const response = await fetch(`http://192.168.165.130:5000/api/students/semester/${semester}`);
         const data = await response.json();
-        setStudents(data);
+        
+        // Log the response data for debugging
+        console.log('Fetched students:', data);
+
+        // Ensure data is an array before setting state
+        if (Array.isArray(data)) {
+          setStudents(data);
+        } else {
+          console.error('Data fetched is not an array:', data);
+        }
       } catch (error) {
         console.error('Failed to fetch students', error);
       }
@@ -117,9 +126,13 @@ export default function ResultScreen() {
         onValueChange={(value) => setSelectedStudentId(value)}
         style={{ marginVertical: 10 }}
       >
-        {students.map((student) => (
-          <Picker.Item label={student.studentId} value={student.studentId} key={student._id} />
-        ))}
+        {students.length > 0 ? (
+          students.map((student) => (
+            <Picker.Item label={student.studentId} value={student.studentId} key={student._id} />
+          ))
+        ) : (
+          <Picker.Item label="No students available" value="" />
+        )}
       </Picker>
 
       {/* Marks Input for each course */}
