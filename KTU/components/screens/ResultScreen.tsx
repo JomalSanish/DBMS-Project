@@ -61,6 +61,7 @@ export default function ResultScreen() {
       } catch (error) {
         console.error('Failed to fetch courses', error);
       }
+      
     };
     fetchCourses();
   }, [semester]);
