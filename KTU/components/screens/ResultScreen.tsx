@@ -31,11 +31,9 @@ export default function ResultScreen() {
   useEffect(() => {
     const fetchStudents = async () => {
       try {
-        const response = await fetch(`http://192.168.165.130:5000/api/students/semester/${semester}`);
+        const response = await fetch(`https://dbms-project-l3ur.onrender.com/api/students/semester/${semester}`);
         const data = await response.json();
         
-        // Log the response data for debugging
-        console.log('Fetched students:', data);
 
         // Ensure data is an array before setting state
         if (Array.isArray(data)) {
@@ -54,14 +52,14 @@ export default function ResultScreen() {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const response = await fetch(`http://192.168.165.130:5000/api/courses/${semester}`);
+        const response = await fetch(`https://dbms-project-l3ur.onrender.com/api/courses/${semester}`);
         const data = await response.json();
         setCourses(data);
         setMarks(data.reduce((acc: { [key: string]: string }, course: Course) => ({ ...acc, [course.name]: '' }), {})); // Reset marks
       } catch (error) {
         console.error('Failed to fetch courses', error);
       }
-      
+
     };
     fetchCourses();
   }, [semester]);
@@ -80,7 +78,7 @@ export default function ResultScreen() {
     }
 
     try {
-      const response = await fetch('http://192.168.165.130:5000/api/results', {
+      const response = await fetch('https://dbms-project-l3ur.onrender.com/api/results', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

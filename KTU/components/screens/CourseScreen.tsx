@@ -14,7 +14,7 @@ export default function CourseScreen() {
 
   const fetchCourses = async () => {
     try {
-      const response = await fetch(`http://192.168.165.130:5000/api/courses?semester=${semester}`);
+      const response = await fetch(`https://dbms-project-l3ur.onrender.com/api/courses?semester=${semester}`);
       if (response.ok) {
         const data = await response.json();
         setCourses(data);
@@ -34,7 +34,7 @@ export default function CourseScreen() {
     }
 
     try {
-      const response = await fetch('http://192.168.165.130:5000/api/courses', {
+      const response = await fetch('https://dbms-project-l3ur.onrender.com/api/courses', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: courseName, semester }),
@@ -55,7 +55,7 @@ export default function CourseScreen() {
 
   const handleDeleteCourse = async (id: string) => {
     try {
-      const response = await fetch(`http://192.168.165.130:5000/api/courses/${id}`, {
+      const response = await fetch(`https://dbms-project-l3ur.onrender.com/api/courses/${id}`, {
         method: 'DELETE',
       });
 

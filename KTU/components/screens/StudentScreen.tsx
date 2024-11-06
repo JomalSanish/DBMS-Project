@@ -28,7 +28,7 @@ export default function StudentScreen() {
 
   const submitStudentData = async () => {
     try {
-      const response = await fetch('http://192.168.165.130:5000/api/students', {
+      const response = await fetch('https://dbms-project-l3ur.onrender.com/api/students', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ studentId, name, semester }),

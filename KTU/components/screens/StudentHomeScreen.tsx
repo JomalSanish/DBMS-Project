@@ -24,7 +24,7 @@ export default function StudentHomeScreen({ route, navigation }: { route: any; n
   useEffect(() => {
     const fetchStudentData = async () => {
       try {
-        const studentResponse = await fetch(`http://192.168.165.130:5000/api/students/${studentId}`);
+        const studentResponse = await fetch(`https://dbms-project-l3ur.onrender.com/api/students/${studentId}`);
         if (studentResponse.ok) {
           const student: Student = await studentResponse.json();
           setSemester(student.semester); // Set the fetched semester
@@ -45,7 +45,7 @@ export default function StudentHomeScreen({ route, navigation }: { route: any; n
 
   const fetchMarksForSemester = async (studentId: string, semester: string) => {
     try {
-      const url = `http://192.168.165.130:5000/api/results?studentId=${studentId}&semester=${semester}`;
+      const url = `https://dbms-project-l3ur.onrender.com/api/results?studentId=${studentId}&semester=${semester}`;
       const response = await fetch(url);
 
       if (response.ok) {

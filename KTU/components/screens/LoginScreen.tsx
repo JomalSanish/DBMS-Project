@@ -11,7 +11,7 @@ export default function LoginScreen({ navigation }: { navigation: any }) {
     // Fetch student IDs from the server on load
     const fetchStudentIds = async () => {
       try {
-        const response = await fetch('http://192.168.165.130:5000/api/students');
+        const response = await fetch('https://dbms-project-l3ur.onrender.com/api/students');
         if (response.ok) {
           const students = await response.json();
           const ids = students.map((student: { studentId: string }) => student.studentId);
