@@ -1,20 +1,16 @@
-// components/screens/TeacherHomeScreen.tsx
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import StudentScreen from './StudentScreen';  // Your StudentScreen component
-import ResultScreen from './ResultScreen';    // Import the ResultScreen
-import CourseScreen from './CourseScreen';    // Import the CourseScreen
-import { Button } from 'react-native';
+import StudentScreen from './StudentScreen';
+import ResultScreen from './ResultScreen';
+import CourseScreen from './CourseScreen';
 
 const Tab = createBottomTabNavigator();
 
-export default function TeacherHomeScreen({ navigation }: { navigation: any }) {
+export default function TeacherHomeScreen() {
   return (
     <Tab.Navigator
       screenOptions={{
-        headerRight: () => (
-          <Button title="Logout" onPress={() => navigation.navigate('Login')} />
-        ),
+        headerShown: false,  // Hide individual tab headers
       }}
     >
       <Tab.Screen name="Student" component={StudentScreen} />

@@ -28,20 +28,29 @@ export default function LoginScreen({ navigation }: { navigation: any }) {
     fetchStudentIds();
   }, []);
 
-  const handleLogin = () => {
-    // Check for teacher credentials
+  const handleLogin = async () => {
     if (id === 'Teacher' && password === 'password') {
       navigation.navigate('TeacherHome');
-    } 
-    // Check for student credentials
-    else if (studentIds.includes(id) && password === id) {
-      navigation.navigate('StudentHome', { studentId: id }); // Pass the student ID
-    } 
-    // Invalid login
-    else {
+    } else if (studentIds.includes(id) && password === id) {
+      try {
+        // Fetch student data to get the name
+        const response = await fetch(`https://dbms-project-l3ur.onrender.com/api/students/${id}`);
+        if (response.ok) {
+          const student = await response.json();
+          // Pass both studentId and studentName to StudentHome
+          navigation.navigate('StudentHome', { studentId: id, studentName: student.name });
+        } else {
+          Alert.alert('Error', 'Failed to fetch student name');
+        }
+      } catch (error) {
+        console.error(error);
+        Alert.alert('Error', 'Something went wrong while fetching student data');
+      }
+    } else {
       Alert.alert('Login Failed', 'Invalid login credentials');
     }
   };
+  
 
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>

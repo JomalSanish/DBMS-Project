@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Button, Alert } from 'react-native';
+import { View, Text, Alert } from 'react-native';
 
 interface Mark {
   courseName: string;
@@ -13,23 +13,26 @@ interface ApiResponse {
 interface Student {
   studentId: string;
   semester: string;
+  name: string; // Adding name field for displaying student name
 }
 
-export default function StudentHomeScreen({ route, navigation }: { route: any; navigation: any }) {
+export default function StudentHomeScreen({ route }: { route: any }) {
   const [marks, setMarks] = useState<Mark[]>([]);
-  const [semester, setSemester] = useState<string>(''); // No default semester
-  const studentId = route.params?.studentId; // Safely access studentId
+  const [semester, setSemester] = useState<string>('');
+  const [studentName, setStudentName] = useState<string>('');
+  const studentId = route.params?.studentId;
 
-  // Fetch student semester and marks when the component mounts
+  // Fetch student data and marks when the component mounts
   useEffect(() => {
     const fetchStudentData = async () => {
       try {
         const studentResponse = await fetch(`https://dbms-project-l3ur.onrender.com/api/students/${studentId}`);
         if (studentResponse.ok) {
           const student: Student = await studentResponse.json();
-          setSemester(student.semester); // Set the fetched semester
+          setSemester(student.semester);
+          setStudentName(student.name);
 
-          // Fetch marks for the fetched semester
+          // Fetch marks for the student's semester
           fetchMarksForSemester(studentId, student.semester);
         } else {
           Alert.alert('Error', 'Failed to fetch student data');
@@ -50,7 +53,7 @@ export default function StudentHomeScreen({ route, navigation }: { route: any; n
 
       if (response.ok) {
         const data: ApiResponse = await response.json();
-        setMarks(data.marks || []); // Set marks based on fetched data
+        setMarks(data.marks || []);
       } else {
         Alert.alert('Error', 'Failed to fetch marks for this semester');
       }
@@ -62,6 +65,9 @@ export default function StudentHomeScreen({ route, navigation }: { route: any; n
 
   return (
     <View style={{ flex: 1, justifyContent: 'center', padding: 16 }}>
+      <Text style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 10 }}>
+        Welcome, {studentName}!
+      </Text>
       <Text style={{ fontSize: 18, marginBottom: 10 }}>Semester: {semester}</Text>
       <View style={{ marginTop: 20 }}>
         {marks.length > 0 ? (
@@ -75,8 +81,6 @@ export default function StudentHomeScreen({ route, navigation }: { route: any; n
           <Text>No marks available for this semester.</Text>
         )}
       </View>
-
-      <Button title="Logout" onPress={() => navigation.navigate('Login')} />
     </View>
   );
 }
