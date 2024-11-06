@@ -63,6 +63,22 @@ app.get('/api/students', async (req, res) => {
   }
 });
 
+// Endpoint to delete a student by ID
+app.delete('/api/students/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const student = await Student.findOneAndDelete({ studentId: id });
+    if (student) {
+      res.status(200).send({ message: 'Student deleted successfully' });
+    } else {
+      res.status(404).send({ error: 'Student not found' });
+    }
+  } catch (error) {
+    console.error("Error deleting student:", error);
+    res.status(500).send({ error: 'Failed to delete student' });
+  }
+});
+
 // Endpoint to fetch students by semester
 app.get('/api/students/semester/:semester', async (req, res) => {
   const { semester } = req.params;
